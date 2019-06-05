@@ -10,8 +10,15 @@ class JourneyTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Text('img'),
-      title: Text(model.name),
+      leading: Row(mainAxisSize: MainAxisSize.min, children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Image.network(model.icon),
+        ),
+        Text(model.time + '+' + model.delay),
+      ]),
+      title: Text(model.title),
+      trailing: Text(model.direction.replaceFirst('Frankfurt (Main)', '')),
     );
   }
 }
