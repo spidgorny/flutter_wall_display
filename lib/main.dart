@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
+import 'package:xml/xml.dart';
+
+import 'Journey.dart';
+import 'JourneyTile.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,9 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   bool loading = false;
-  List<String> rmv = [];
+  List<Journey> rmv = [];
 
   void initState() {
     super.initState();
@@ -47,27 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Response status: ${response.statusCode}');
 //      print('Response body: ${response.body}');
 
-      var document = xml.parse(response.body);
+      XmlDocument document = xml.parse(response.body);
       rmv = [];
       for (var j in document.findAllElements('Journey')) {
         //print(j);
-        var entry = '';
-        var attrs = j.findAllElements('Attribute');
-        for (var a in attrs) {
-          var aType = a.getAttribute('type');
-          //print(aType);
-          for (var v in a.findAllElements('AttributeVariant')) {
-            var vType = v.getAttribute('type');
-            //print(vType);
-            if (vType == 'NORMAL') {
-              var text = v.findElements('Text');
-              var text0 = text.first;
-              print(aType + '=' + text0.text);
-              entry += ' ' + aType + '=' + text0.text;
-            }
-          }
-        }
-        rmv.add(entry);
+        var jo = Journey.parse(j);
+        rmv.add(jo);
       }
     }
     print(rmv.length);
@@ -77,9 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+    setState(() {});
     asyncInitState();
   }
 
@@ -94,9 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: loading
                 ? [CircularProgressIndicator()]
-                : rmv.map((node) {
-                    return Text(node);
-                  }).toList()),
+                : [
+                    ListView(
+                        shrinkWrap: true,
+                        children: rmv.map((Journey node) {
+                          return JourneyTile(node);
+                        }).toList())
+                  ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
