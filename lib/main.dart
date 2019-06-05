@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:xml/xml.dart' as xml;
-import 'package:xml/xml.dart';
 
-import 'Journey.dart';
-import 'JourneyTile.dart';
+import 'VGFPlan.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-  var title = 'Wall Display';
+    var title = 'Wall Display';
     return MaterialApp(
       title: title,
       theme: ThemeData(
@@ -32,38 +28,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool loading = false;
-  List<Journey> rmv = [];
-
   void initState() {
     super.initState();
     this.asyncInitState();
   }
 
-  void asyncInitState() async {
-    setState(() {
-      loading = true;
-    });
-    var url =
-        'https://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_anzeigetafel&cfgfile=FrankfurtM_3001969_1303738378&outputMode=xml&start=yes&output=xml&';
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      print('Response status: ${response.statusCode}');
-//      print('Response body: ${response.body}');
-
-      XmlDocument document = xml.parse(response.body);
-      rmv = [];
-      for (var j in document.findAllElements('Journey')) {
-        //print(j);
-        var jo = Journey.parse(j);
-        rmv.add(jo);
-      }
-    }
-    print(rmv.length);
-    setState(() {
-      loading = false;
-    });
-  }
+  void asyncInitState() async {}
 
   void _incrementCounter() {
     setState(() {});
@@ -72,23 +42,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double wHeight = MediaQuery.of(context).size.height;
+
+    var appBar = AppBar(
+      title: Text(widget.title),
+    );
+    double abHeight = appBar.preferredSize.height;
+    double height = wHeight - abHeight;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: loading
-                ? [CircularProgressIndicator()]
-                : [
-                    ListView(
-                        shrinkWrap: true,
-                        children: rmv.map((Journey node) {
-                          return JourneyTile(node);
-                        }).toList())
-                  ]),
-      ),
+      appBar: appBar,
+      body: Column(children: [
+        Container(height: 0.45 * height, child: Text('Weather')),
+        Container(height: 0.45 * height, child: VGFPlan()),
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
