@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'VGFPlan.dart';
+import 'WeatherMap.dart';
 
 void main() => runApp(MyApp());
 
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: appBar,
       body: Column(children: [
-        Container(height: 0.45 * height, child: Text('Weather')),
+        Container(height: 0.45 * height, child: WeatherMap()),
         Container(height: 0.45 * height, child: VGFPlan()),
       ]),
       floatingActionButton: FloatingActionButton(
